@@ -26,17 +26,22 @@ export async function fetchQuote(ticker: string): Promise<Quote | null> {
   const m = r?.meta;
   if (!r || !m?.regularMarketPrice) return null;
   const q = r.indicators?.quote?.[0] ?? {};
-  const days = (r.timestamp ?? []).map((_, i) => ({ close: q.close?.[i] ?? null, volume: q.volume?.[i] ?? null }))
-    .filter(d => d.close != null);
-  const last = days.at(-1), prev = days.at(-2);
+  // 일봉 중 "오늘" 봉은 장 마감 직후 종가가 비어(null) 있을 수 있다. 종가로 거르면 하루씩 밀려
+  // 이틀 전 종가와 비교하게 되므로, 날짜로 오늘 봉을 찾고 그 바로 앞 봉을 전일로 쓴다.
+  const ts = r.timestamp ?? [];
+  const etDate = (sec: number) => new Intl.DateTimeFormat("sv-SE", { timeZone: "America/New_York" }).format(new Date(sec * 1000));
+  const today = m.regularMarketTime ? etDate(m.regularMarketTime) : null;
+  let cur = ts.length - 1;
+  if (today) { const i = ts.findLastIndex(t => etDate(t) === today); if (i >= 0) cur = i; }
+  const prev = cur - 1;
   const price = m.regularMarketPrice;
-  const volume = m.regularMarketVolume ?? last?.volume ?? null;
-  const prevClose = prev?.close ?? null;
+  const volume = m.regularMarketVolume ?? q.volume?.[cur] ?? null;
+  const prevClose = prev >= 0 ? q.close?.[prev] ?? null : null;
   const quote: Quote = {
     price,
     change_pct: prevClose ? ((price - prevClose) / prevClose) * 100 : null,
     volume,
-    prev_volume: prev?.volume ?? null,
+    prev_volume: prev >= 0 ? q.volume?.[prev] ?? null : null,
     dollar_volume_usd: null,   // 정확한 거래대금은 없으므로 화면에서 가격×거래량으로 추정 표시
     market_cap_usd: null,
     week52_low: m.fiftyTwoWeekLow ?? null,
