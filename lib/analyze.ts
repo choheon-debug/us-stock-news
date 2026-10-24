@@ -1,15 +1,16 @@
-// 분석 파이프라인. 지금은 목업 단계: 진행 상태를 흉내 내고 목업 결과를 돌려준다.
-// 다음 단계에서 ① 공시·시세 수집 → ② Claude + web_search → ③ zod 검증(실패 시 1회 재시도)로 바뀐다.
+// 분석 파이프라인: ① 공시·시세·거래정지 수집 → ② Claude + web_search → ③ zod 검증 → ④ 티커별 캐시
+// ANTHROPIC_API_KEY가 없거나 USE_MOCK=1이면 목업 결과를 돌려준다 (화면에 "목업" 표시가 붙는다).
 import { AnalysisSchema, type Analysis } from "@/lib/schema";
 import { mockAnalysis } from "@/lib/mock";
+import { collect } from "@/lib/collectors";
+import { claudeAnalyze } from "@/lib/claude";
 import { ui } from "@/lib/ui-config";
+import { nowStamps } from "@/lib/time";
 
 const TTL_MS = ui.cache_ttl_minutes * 60_000;
 const cache = new Map<string, { at: number; data: Analysis }>();
 
-// 실제 분석(Claude + 웹 검색)이 붙기 전까지는 키가 있어도 항상 목업이다.
-// 목업 결과에는 반드시 "목업" 표시가 붙어야 하므로, 실제 분석을 붙일 때 이 조건을 바꾼다.
-export const useMock = () => true;
+export const useMock = () => process.env.USE_MOCK === "1" || !process.env.ANTHROPIC_API_KEY;
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
@@ -18,8 +19,40 @@ export async function analyze(query: string, { refresh = false, onStatus }: { re
   const hit = cache.get(key);
   if (!refresh && hit && Date.now() - hit.at < TTL_MS) return { data: hit.data, cached: true };
 
-  for (const m of ui.status_messages) { onStatus(m); await sleep(450); }
-  const data = AnalysisSchema.parse(mockAnalysis(query));
-  if (!data.error) cache.set(key, { at: Date.now(), data });
+  const data = useMock() ? await mock(query, onStatus) : await real(query, onStatus);
+  if (!data.error) {
+    cache.set(key, { at: Date.now(), data });
+    cache.set(data.ticker, { at: Date.now(), data });   // BIRD로 찾은 결과를 BIRK로도 재사용
+  }
   return { data, cached: false };
+}
+
+async function mock(query: string, onStatus: (m: string) => void) {
+  for (const m of ui.status_messages) { onStatus(m); await sleep(450); }
+  return AnalysisSchema.parse(mockAnalysis(query));
+}
+
+async function real(query: string, onStatus: (m: string) => void): Promise<Analysis> {
+  onStatus("종목 확인 중…");
+  onStatus("공시·시세 확인 중…");
+  const ctx = await collect(query);
+  const { data, citations } = await claudeAnalyze(query, ctx, onStatus);
+  if (data.error) return data;
+
+  // 서버가 직접 받은 값이 검색값보다 우선 (시세·분석 시각)
+  const q = ctx.quote;
+  const quote = q && (!ctx.ticker || ctx.ticker === data.ticker)
+    ? {
+        price: q.price, change_pct: q.change_pct, volume: q.volume, prev_volume: q.prev_volume,
+        dollar_volume_usd: q.dollar_volume_usd ?? data.quote?.dollar_volume_usd ?? null,
+        market_cap_usd: q.market_cap_usd ?? data.quote?.market_cap_usd ?? null,
+        week52_low: q.week52_low, week52_high: q.week52_high, as_of: q.as_of, source: q.source,
+      }
+    : data.quote;
+
+  // 응답 인용 중 출처 목록에 빠진 것을 보탠다
+  const known = new Set(data.sources.map(s => s.url));
+  const sources = [...data.sources, ...citations.filter(c => !known.has(c.url))].slice(0, 20);
+
+  return AnalysisSchema.parse({ ...data, quote, sources, analyzed_at: nowStamps(), ticker: data.ticker.toUpperCase() });
 }
