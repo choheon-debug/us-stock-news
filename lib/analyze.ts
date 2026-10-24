@@ -29,7 +29,8 @@ export async function analyze(query: string, { refresh = false, onStatus }: { re
 
 async function mock(query: string, onStatus: (m: string) => void) {
   for (const m of ui.status_messages) { onStatus(m); await sleep(450); }
-  return AnalysisSchema.parse(mockAnalysis(query));
+  const data = AnalysisSchema.parse(mockAnalysis(query));
+  return { ...data, news: data.news.slice(0, 4) };
 }
 
 async function real(query: string, onStatus: (m: string) => void): Promise<Analysis> {
@@ -57,5 +58,6 @@ async function real(query: string, onStatus: (m: string) => void): Promise<Analy
   const ticker = data.ticker.toUpperCase();
   // 대소문자만 다른 입력(knrx → KNRX)은 "해석했어요" 안내를 띄우지 않는다
   const resolved_from = data.resolved_from && data.resolved_from.trim().toUpperCase() !== ticker ? data.resolved_from : null;
-  return AnalysisSchema.parse({ ...data, ticker, resolved_from, quote, sources, analyzed_at: nowStamps() });
+  // 뉴스는 4건만 (사용자 요청)
+  return AnalysisSchema.parse({ ...data, ticker, resolved_from, quote, sources, news: data.news.slice(0, 4), analyzed_at: nowStamps() });
 }
