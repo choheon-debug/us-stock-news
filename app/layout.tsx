@@ -10,16 +10,13 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b1220" },
-  ],
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
-      <body className="min-h-dvh bg-slate-50 text-slate-900 antialiased dark:bg-[#0b1220] dark:text-slate-100">{children}</body>
+      <body className="min-h-dvh bg-white text-slate-900 antialiased dark:bg-[#0b1220] dark:text-slate-100">{children}</body>
     </html>
   );
 }

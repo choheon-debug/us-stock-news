@@ -1,7 +1,9 @@
 @import "tailwindcss";
+/* 항상 밝은 화면: 휴대폰이 어두운 모드여도 dark: 스타일을 쓰지 않는다 (.dark 클래스를 붙일 때만 켜짐) */
+@custom-variant dark (&:where(.dark, .dark *));
 
-:root { color-scheme: light dark; }
+:root { color-scheme: light; }
 body { -webkit-text-size-adjust: 100%; }
 /* 배지 색: ui-config.json의 라이트/다크 색을 CSS 변수로 받아 쓴다 */
 .badge { background: var(--bg); color: var(--fg); }
-@media (prefers-color-scheme: dark) { .badge { background: var(--bg-d); color: var(--fg-d); } }
+.dark .badge { background: var(--bg-d); color: var(--fg-d); }

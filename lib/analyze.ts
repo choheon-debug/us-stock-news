@@ -54,5 +54,8 @@ async function real(query: string, onStatus: (m: string) => void): Promise<Analy
   const known = new Set(data.sources.map(s => s.url));
   const sources = [...data.sources, ...citations.filter(c => !known.has(c.url))].slice(0, 20);
 
-  return AnalysisSchema.parse({ ...data, quote, sources, analyzed_at: nowStamps(), ticker: data.ticker.toUpperCase() });
+  const ticker = data.ticker.toUpperCase();
+  // 대소문자만 다른 입력(knrx → KNRX)은 "해석했어요" 안내를 띄우지 않는다
+  const resolved_from = data.resolved_from && data.resolved_from.trim().toUpperCase() !== ticker ? data.resolved_from : null;
+  return AnalysisSchema.parse({ ...data, ticker, resolved_from, quote, sources, analyzed_at: nowStamps() });
 }
