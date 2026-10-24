@@ -1,0 +1,86 @@
+{
+  "_note": "엔드포인트·무료 한도·약관은 구현 시점에 각 공식 문서에서 재확인. 모든 호출은 서버에서만.",
+  "primary": [
+    {
+      "id": "claude_web_search",
+      "name": "Claude API + web_search 툴",
+      "purpose": "뉴스·이벤트 검색 및 한국어 분석 (핵심)",
+      "endpoint": "https://api.anthropic.com/v1/messages",
+      "auth": "ANTHROPIC_API_KEY (x-api-key 헤더)",
+      "docs": "https://docs.claude.com/en/docs/agents-and-tools/tool-use/web-search-tool",
+      "notes": "web_search_20260209(동적 필터링) 또는 web_search_20250305. 검색 1,000회당 과금 + 토큰 비용. Console에서 웹 검색 활성화 필요."
+    },
+    {
+      "id": "sec_edgar",
+      "name": "SEC EDGAR",
+      "purpose": "최근 공시(8-K, 6-K, S-1/F-1, 424B, 10-Q/10-K, 20-F, Form 4, 13D/G) — 희석·오버행·상장 이슈의 1차 출처",
+      "endpoints": {
+        "ticker_to_cik": "https://www.sec.gov/files/company_tickers.json",
+        "submissions": "https://data.sec.gov/submissions/CIK{cik10}.json",
+        "company_facts": "https://data.sec.gov/api/xbrl/companyfacts/CIK{cik10}.json",
+        "filing_index": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={cik}&type=&dateb=&owner=include&count=40"
+      },
+      "auth": "없음. User-Agent 헤더에 앱명+연락 이메일 필수 (SEC_USER_AGENT)",
+      "notes": "초당 10회 이하. CIK는 10자리 0 패딩. 외국 발행사(F-1/6-K/20-F)도 포함."
+    }
+  ],
+  "market_data": [
+    {
+      "id": "finnhub",
+      "name": "Finnhub",
+      "purpose": "시세, 회사 프로필, 종목 뉴스, 실적 캘린더",
+      "endpoints": {
+        "quote": "https://finnhub.io/api/v1/quote?symbol={T}",
+        "profile": "https://finnhub.io/api/v1/stock/profile2?symbol={T}",
+        "company_news": "https://finnhub.io/api/v1/company-news?symbol={T}&from={YYYY-MM-DD}&to={YYYY-MM-DD}",
+        "earnings_calendar": "https://finnhub.io/api/v1/calendar/earnings?symbol={T}&from=&to=",
+        "symbol_search": "https://finnhub.io/api/v1/search?q={query}"
+      },
+      "auth": "FINNHUB_API_KEY (token 쿼리 또는 X-Finnhub-Token 헤더)",
+      "notes": "무료 플랜 분당 호출 제한 있음. symbol_search로 오타·회사명 → 티커 해석 보조."
+    },
+    {
+      "id": "yahoo_rss",
+      "name": "Yahoo Finance RSS (비공식)",
+      "purpose": "종목 헤드라인 보조",
+      "endpoint": "https://feeds.finance.yahoo.com/rss/2.0/headline?s={T}&region=US&lang=en-US",
+      "auth": "없음",
+      "notes": "비공식·변경 가능. 아티팩트에서 CORS로 실패했던 소스 → 서버에서만 호출. 실패해도 전체 분석은 계속."
+    }
+  ],
+  "exchange": [
+    {
+      "id": "nasdaq_halts",
+      "name": "Nasdaq Trader 거래정지 RSS",
+      "purpose": "당일 거래정지(LULD, T1/T12/H10 등) 및 재개 시각",
+      "endpoint": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts",
+      "auth": "없음",
+      "notes": "NYSE/NYSE American 종목도 포함. 사유 코드 → 한국어 라벨은 ui-config.json halt_codes 참고."
+    },
+    {
+      "id": "nyse_halts",
+      "name": "NYSE 거래정지 현황",
+      "purpose": "NYSE 계열 상장 종목 정지 확인 (참조 링크)",
+      "url": "https://www.nyse.com/trade-halt"
+    },
+    {
+      "id": "nasdaq_listing_center",
+      "name": "Nasdaq Listing Center",
+      "purpose": "상장유지 기준 미달 종목 목록 (참조 링크)",
+      "url": "https://listingcenter.nasdaq.com/noncompliantcompanylist.aspx"
+    }
+  ],
+  "press_release_wires": [
+    { "name": "GlobeNewswire", "url": "https://www.globenewswire.com", "notes": "초소형주 유료 홍보 기사 빈번 — promotion 카테고리 판별 주의" },
+    { "name": "PR Newswire", "url": "https://www.prnewswire.com" },
+    { "name": "Business Wire", "url": "https://www.businesswire.com" },
+    { "name": "ACCESS Newswire", "url": "https://www.accessnewswire.com" }
+  ],
+  "reference_links_for_ui": [
+    { "label": "Yahoo Finance", "url": "https://finance.yahoo.com/quote/{T}" },
+    { "label": "TradingView", "url": "https://www.tradingview.com/symbols/{T}/" },
+    { "label": "SEC 공시", "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={T}&owner=include&count=40" },
+    { "label": "Finviz", "url": "https://finviz.com/quote.ashx?t={T}" },
+    { "label": "Stocktwits", "url": "https://stocktwits.com/symbol/{T}" }
+  ]
+}

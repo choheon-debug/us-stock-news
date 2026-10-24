@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "stock-news-analysis",
+  "title": "미증시뉴스 분석 결과",
+  "type": "object",
+  "required": ["ticker", "company", "analyzed_at", "summary", "news", "events", "risks", "sources"],
+  "properties": {
+    "ticker": { "type": "string", "description": "확정된 티커 (대문자)" },
+    "resolved_from": { "type": ["string", "null"], "description": "사용자 입력이 티커와 다를 때 원래 입력 (예: BIRD)" },
+    "company": { "type": "string", "description": "회사 정식 명칭" },
+    "exchange": { "type": ["string", "null"], "enum": ["NASDAQ", "NYSE", "NYSE American", "OTC", "기타", null] },
+    "sector": { "type": ["string", "null"] },
+    "country": { "type": ["string", "null"], "description": "본사 소재국 (예: 홍콩, 미국)" },
+    "analyzed_at": {
+      "type": "object",
+      "required": ["kst", "et"],
+      "properties": {
+        "kst": { "type": "string", "description": "ISO 8601, +09:00" },
+        "et": { "type": "string", "description": "ISO 8601, 미 동부" }
+      }
+    },
+    "quote": {
+      "type": ["object", "null"],
+      "description": "시세. 서버 수집값 우선, 없으면 검색값. 기준 시각 필수",
+      "properties": {
+        "price": { "type": "number" },
+        "change_pct": { "type": "number" },
+        "market_cap_usd": { "type": ["number", "null"] },
+        "week52_low": { "type": ["number", "null"] },
+        "week52_high": { "type": ["number", "null"] },
+        "volume": { "type": ["number", "null"] },
+        "as_of": { "type": "string" },
+        "source": { "type": "string" }
+      },
+      "required": ["price", "as_of", "source"]
+    },
+    "summary": {
+      "type": "object",
+      "required": ["tone", "text"],
+      "properties": {
+        "tone": { "type": "string", "enum": ["positive", "negative", "neutral", "mixed"] },
+        "text": { "type": "string", "description": "종합 전망 2~4문장 (한국어)" },
+        "move_explanation": { "type": ["string", "null"], "description": "당일 급등락 원인. 확인 불가 시 '확인된 촉매 없음'" }
+      }
+    },
+    "news": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "required": ["headline", "description", "source", "date", "sentiment"],
+        "properties": {
+          "headline": { "type": "string", "description": "한국어 제목 (필요 시 번역)" },
+          "description": { "type": "string", "description": "1~2문장 요약 및 주가 영향" },
+          "source": { "type": "string" },
+          "url": { "type": ["string", "null"], "format": "uri" },
+          "date": { "type": "string", "description": "YYYY-MM-DD" },
+          "sentiment": { "type": "string", "enum": ["positive", "negative", "neutral"] },
+          "category": { "type": "string", "enum": ["earnings", "filing", "product", "regulatory", "listing", "offering", "analyst", "macro", "promotion", "other"] }
+        }
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "title", "type", "status", "impact"],
+        "properties": {
+          "date": { "type": "string", "description": "YYYY-MM-DD 또는 '2026-11 중순' 같은 범위" },
+          "title": { "type": "string" },
+          "type": { "type": "string", "enum": ["earnings", "product", "regulatory", "listing", "corporate_action", "offering", "macro", "other"] },
+          "status": { "type": "string", "enum": ["past", "upcoming", "estimated"] },
+          "impact": { "type": "string", "description": "예상 주가 영향 1문장" }
+        }
+      }
+    },
+    "risks": {
+      "type": "array",
+      "description": "리스크와 촉매. 초소형주 체크리스트 결과 포함",
+      "items": {
+        "type": "object",
+        "required": ["kind", "title", "detail", "severity"],
+        "properties": {
+          "kind": { "type": "string", "enum": ["risk", "catalyst"] },
+          "category": { "type": "string", "enum": ["dilution", "overhang", "listing", "reverse_split", "financial", "trading", "governance", "promotion", "jurisdiction", "business", "other"] },
+          "title": { "type": "string" },
+          "detail": { "type": "string" },
+          "severity": { "type": "string", "enum": ["high", "medium", "low"] }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["title", "url"],
+        "properties": {
+          "title": { "type": "string" },
+          "url": { "type": "string", "format": "uri" }
+        }
+      }
+    },
+    "error": { "type": ["string", "null"], "description": "티커 확정 실패 등. 있으면 다른 필드는 비워도 됨" }
+  }
+}

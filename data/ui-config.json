@@ -1,0 +1,68 @@
+{
+  "quick_tickers": ["AAPL", "NVDA", "TSLA", "MSFT", "AMZN", "META", "GOOGL"],
+  "test_tickers": {
+    "large_cap": ["NVDA"],
+    "mid_cap": ["BIRK"],
+    "micro_cap": ["NCI", "FCUV", "MSGY", "KNRX"],
+    "typo_case": { "input": "BIRD", "expected": "BIRK" }
+  },
+  "sentiment": {
+    "positive": { "label": "긍정적", "bg": "#dcfce7", "fg": "#166534", "bg_dark": "#14532d", "fg_dark": "#bbf7d0" },
+    "negative": { "label": "부정적", "bg": "#fee2e2", "fg": "#991b1b", "bg_dark": "#7f1d1d", "fg_dark": "#fecaca" },
+    "neutral":  { "label": "중립",   "bg": "#f1f5f9", "fg": "#475569", "bg_dark": "#334155", "fg_dark": "#e2e8f0" },
+    "mixed":    { "label": "혼조",   "bg": "#fef3c7", "fg": "#92400e", "bg_dark": "#78350f", "fg_dark": "#fde68a" }
+  },
+  "event_types": {
+    "earnings":         { "label": "실적",     "color": "#378ADD" },
+    "product":          { "label": "제품",     "color": "#1D9E75" },
+    "regulatory":       { "label": "규제",     "color": "#BA7517" },
+    "listing":          { "label": "상장유지", "color": "#D85A30" },
+    "corporate_action": { "label": "기업행위", "color": "#7F77DD" },
+    "offering":         { "label": "증자",     "color": "#E24B4A" },
+    "macro":            { "label": "매크로",   "color": "#888780" },
+    "other":            { "label": "기타",     "color": "#B4B2A9" }
+  },
+  "event_status": {
+    "past": "확정(과거)",
+    "upcoming": "예정",
+    "estimated": "추정"
+  },
+  "news_categories": {
+    "earnings": "실적", "filing": "공시", "product": "제품/사업", "regulatory": "규제",
+    "listing": "상장유지", "offering": "증자/희석", "analyst": "애널리스트",
+    "macro": "매크로", "promotion": "홍보성", "other": "기타"
+  },
+  "risk_categories": {
+    "dilution": "희석", "overhang": "오버행", "listing": "상장유지", "reverse_split": "역분할",
+    "financial": "재무", "trading": "거래/유동성", "governance": "거버넌스",
+    "promotion": "홍보성", "jurisdiction": "지역 규제", "business": "사업", "other": "기타"
+  },
+  "severity": {
+    "high":   { "label": "높음", "color": "#E24B4A" },
+    "medium": { "label": "중간", "color": "#EF9F27" },
+    "low":    { "label": "낮음", "color": "#888780" }
+  },
+  "halt_codes": {
+    "LUDP": "LULD 변동성 일시정지",
+    "LUDS": "LULD 변동성 정지(직전 거래 종료)",
+    "T1": "중요 뉴스 대기",
+    "T2": "뉴스 발표",
+    "T3": "뉴스 및 재개 시각 안내",
+    "T5": "단일 종목 서킷브레이커",
+    "T12": "거래소 추가 정보 요청",
+    "H4": "상장 요건 미충족",
+    "H10": "SEC 거래정지",
+    "H11": "규제 우려",
+    "M": "시장 전체 서킷브레이커"
+  },
+  "status_messages": [
+    "종목 확인 중…",
+    "공시 확인 중…",
+    "뉴스 검색 중…",
+    "이벤트 정리 중…",
+    "분석 정리 중…"
+  ],
+  "cache_ttl_minutes": 20,
+  "recent_tickers_max": 10,
+  "disclaimer": "본 정보는 공개 자료를 정리한 참고용이며 투자 권유가 아닙니다. 투자 판단과 책임은 본인에게 있습니다."
+}
