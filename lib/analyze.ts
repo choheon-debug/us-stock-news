@@ -7,7 +7,9 @@ import { ui } from "@/lib/ui-config";
 const TTL_MS = ui.cache_ttl_minutes * 60_000;
 const cache = new Map<string, { at: number; data: Analysis }>();
 
-export const useMock = () => process.env.USE_MOCK === "1" || !process.env.ANTHROPIC_API_KEY;
+// 실제 분석(Claude + 웹 검색)이 붙기 전까지는 키가 있어도 항상 목업이다.
+// 목업 결과에는 반드시 "목업" 표시가 붙어야 하므로, 실제 분석을 붙일 때 이 조건을 바꾼다.
+export const useMock = () => true;
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
