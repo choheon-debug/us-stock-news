@@ -28,7 +28,9 @@
         "market_cap_usd": { "type": ["number", "null"] },
         "week52_low": { "type": ["number", "null"] },
         "week52_high": { "type": ["number", "null"] },
-        "volume": { "type": ["number", "null"] },
+        "volume": { "type": ["number", "null"], "description": "당일 거래량(주)" },
+        "prev_volume": { "type": ["number", "null"], "description": "전일 거래량(주). 전일 대비 증가율 계산용" },
+        "dollar_volume_usd": { "type": ["number", "null"], "description": "당일 거래대금(USD). 없으면 UI가 가격×거래량으로 추정 표시" },
         "as_of": { "type": "string" },
         "source": { "type": "string" }
       },

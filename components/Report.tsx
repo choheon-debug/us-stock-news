@@ -28,7 +28,8 @@ function Section({ title, children, right }: { title: string; children: ReactNod
 const usd = (v: number) => `$${v.toLocaleString("en-US", { maximumFractionDigits: v < 10 ? 4 : 2 })}`;
 function capKo(v: number) {
   if (v >= 1e12) return `${(v / 1e12).toFixed(2)}조 달러`;
-  if (v >= 1e8) return `${Math.round(v / 1e8).toLocaleString()}억 달러`;
+  if (v >= 1e10) return `${Math.round(v / 1e8).toLocaleString()}억 달러`;
+  if (v >= 1e8) return `${(v / 1e8).toFixed(1).replace(/\.0$/, "")}억 달러`;
   return `${Math.round(v / 1e4).toLocaleString()}만 달러`;
 }
 const volKo = (v: number) => (v >= 1e8 ? `${(v / 1e8).toFixed(1)}억 주` : `${Math.round(v / 1e4).toLocaleString()}만 주`);
@@ -60,6 +61,10 @@ export default function Report({ data, cached, mock, busy, onRefresh }: Props) {
   }
   const q = data.quote;
   const up = (q?.change_pct ?? 0) >= 0;
+  // 거래대금: 받은 값이 없으면 가격×거래량으로 추정. 전일 대비 거래량 증가율은 두 거래량으로 계산
+  const dollarVol = q?.dollar_volume_usd != null ? { value: q.dollar_volume_usd, estimated: false }
+    : q?.volume != null ? { value: q.price * q.volume, estimated: true } : null;
+  const volChange = q?.volume != null && q.prev_volume ? (q.volume / q.prev_volume - 1) * 100 : null;
   const events = [...data.events].sort((a, b) => dateKey(a.date).localeCompare(dateKey(b.date)));
   const risks = data.risks.filter(r => r.kind === "risk");
   const catalysts = data.risks.filter(r => r.kind === "catalyst");
@@ -100,9 +105,23 @@ export default function Report({ data, cached, mock, busy, onRefresh }: Props) {
         </div>
         {q && (
           <>
-            <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+            <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
+              {dollarVol != null && (
+                <><dt className="text-slate-500">거래대금</dt>
+                <dd className="text-right font-bold tabular-nums">{dollarVol.estimated && <span className="mr-1 text-xs font-normal text-slate-400" title="가격×거래량으로 추정">≈</span>}{capKo(dollarVol.value)}</dd></>
+              )}
+              {q.volume != null && (
+                <><dt className="text-slate-500">거래량</dt>
+                <dd className="text-right font-semibold tabular-nums">{volKo(q.volume)}</dd></>
+              )}
+              {volChange != null && (
+                <><dt className="text-slate-500">전일 대비 거래량</dt>
+                <dd className={`text-right font-bold tabular-nums ${volChange >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
+                  {volChange >= 0 ? "+" : ""}{Math.round(volChange).toLocaleString()}%
+                  {q.volume! / q.prev_volume! >= 3 && <span className="ml-1 rounded-md bg-red-100 px-1.5 py-0.5 text-xs text-red-700 dark:bg-red-950 dark:text-red-300">{(q.volume! / q.prev_volume!).toFixed(1)}배 급증</span>}
+                </dd></>
+              )}
               {q.market_cap_usd != null && <><dt className="text-slate-500">시가총액</dt><dd className="text-right font-semibold tabular-nums">{capKo(q.market_cap_usd)}</dd></>}
-              {q.volume != null && <><dt className="text-slate-500">거래량</dt><dd className="text-right font-semibold tabular-nums">{volKo(q.volume)}</dd></>}
             </dl>
             {q.week52_low != null && q.week52_high != null && <Range52 low={q.week52_low} high={q.week52_high} price={q.price} />}
             <p className="mt-2 text-xs text-slate-400">시세 기준: {q.as_of} · {q.source}</p>

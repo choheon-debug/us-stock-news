@@ -24,7 +24,7 @@ const MOCKS: Record<string, () => Base> = {
     exchange: "NASDAQ",
     sector: "반도체",
     country: "미국",
-    quote: { price: 182.4, change_pct: 1.8, market_cap_usd: 4.45e12, week52_low: 86.6, week52_high: 195.2, volume: 182_000_000, as_of: `${day(0)} 16:00 ET`, source: "목업" },
+    quote: { price: 182.4, change_pct: 1.8, market_cap_usd: 4.45e12, week52_low: 86.6, week52_high: 195.2, volume: 182_000_000, prev_volume: 151_000_000, dollar_volume_usd: 33_200_000_000, as_of: `${day(0)} 16:00 ET`, source: "목업" },
     summary: {
       tone: "positive",
       text: "데이터센터 수요가 이어지며 다음 분기 실적 기대가 유지되고 있습니다. 주요 고객사의 설비 투자 확대 발표가 이어졌지만, 대중국 수출 규제 관련 불확실성은 남아 있습니다. 실적 발표일을 앞두고 변동성이 커질 수 있습니다.",
@@ -61,7 +61,7 @@ const MOCKS: Record<string, () => Base> = {
     exchange: "NYSE",
     sector: "소비재(신발)",
     country: "독일/영국",
-    quote: { price: 47.15, change_pct: -0.6, market_cap_usd: 8.9e9, week52_low: 42.1, week52_high: 64.8, volume: 1_400_000, as_of: `${day(0)} 16:00 ET`, source: "목업" },
+    quote: { price: 47.15, change_pct: -0.6, market_cap_usd: 8.9e9, week52_low: 42.1, week52_high: 64.8, volume: 1_400_000, prev_volume: 1_900_000, dollar_volume_usd: 66_000_000, as_of: `${day(0)} 16:00 ET`, source: "목업" },
     summary: {
       tone: "mixed",
       text: "도매 채널 성장은 견조하지만 미국 관세와 환율 부담이 마진 전망을 누르고 있습니다. 다음 분기 실적에서 가격 인상 효과가 확인될지가 관건입니다.",
@@ -93,7 +93,7 @@ const MOCKS: Record<string, () => Base> = {
     exchange: "NASDAQ",
     sector: "바이오",
     country: "홍콩",
-    quote: { price: 1.84, change_pct: 142.1, market_cap_usd: 21_000_000, week52_low: 0.41, week52_high: 6.2, volume: 96_000_000, as_of: `${day(0)} 16:00 ET`, source: "목업" },
+    quote: { price: 1.84, change_pct: 142.1, market_cap_usd: 21_000_000, week52_low: 0.41, week52_high: 6.2, volume: 96_000_000, prev_volume: 1_850_000, dollar_volume_usd: 171_000_000, as_of: `${day(0)} 16:00 ET`, source: "목업" },
     summary: {
       tone: "mixed",
       text: "보도자료 한 건으로 거래량이 평소의 수십 배로 늘며 급등했습니다. 그러나 직전에 재판매 등록(F-1)이 효력을 얻어 오버행 물량이 크고, 최소 호가 미달 통지 상태여서 변동성이 매우 큽니다.",

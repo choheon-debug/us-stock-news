@@ -20,6 +20,8 @@ export const AnalysisSchema = z.object({
       week52_low: z.number().nullish(),
       week52_high: z.number().nullish(),
       volume: z.number().nullish(),
+      prev_volume: z.number().nullish(),
+      dollar_volume_usd: z.number().nullish(),
       as_of: z.string(),
       source: z.string(),
     })
