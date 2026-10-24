@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+:root { color-scheme: light dark; }
+body { -webkit-text-size-adjust: 100%; }
+/* 배지 색: ui-config.json의 라이트/다크 색을 CSS 변수로 받아 쓴다 */
+.badge { background: var(--bg); color: var(--fg); }
+@media (prefers-color-scheme: dark) { .badge { background: var(--bg-d); color: var(--fg-d); } }
