@@ -3,6 +3,9 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root { color-scheme: light; }
+/* 글씨를 전체적으로 키운다 (기본 16px → 18px, 모든 크기가 비율대로 커진다) */
+html { font-size: 112.5%; }
+body { line-height: 1.65; word-break: keep-all; overflow-wrap: anywhere; }
 body { -webkit-text-size-adjust: 100%; }
 /* 배지 색: ui-config.json의 라이트/다크 색을 CSS 변수로 받아 쓴다 */
 .badge { background: var(--bg); color: var(--fg); }

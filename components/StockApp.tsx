@@ -93,13 +93,13 @@ export default function StockApp() {
     <main className="mx-auto max-w-2xl px-4 pb-16 pt-[max(env(safe-area-inset-top),1rem)]">
       <header className="mb-4 mt-2">
         <h1 className="text-2xl font-extrabold tracking-tight">📈 미증시뉴스</h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">티커를 입력하면 최신 뉴스와 주가에 영향을 줄 이벤트를 정리해 드려요.</p>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-500">티커를 입력하면 최신 뉴스와 주가에 영향을 줄 이벤트를 정리해 드려요.</p>
       </header>
 
       <form onSubmit={e => { e.preventDefault(); run(input); }} className="flex gap-2">
         <input value={input} onChange={e => setInput(e.target.value)} placeholder="티커 또는 회사명 (예: NVDA)"
           autoCapitalize="characters" autoCorrect="off" spellCheck={false} enterKeyHint="search"
-          className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 text-base font-semibold uppercase placeholder:font-normal placeholder:normal-case placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 dark:border-slate-700 dark:bg-slate-900" />
+          className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 text-base font-semibold uppercase placeholder:font-normal placeholder:normal-case placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 dark:border-slate-700 dark:bg-slate-900" />
         <button type="submit" disabled={busy || !input.trim()}
           className="rounded-xl bg-indigo-600 px-5 py-3 font-bold text-white shadow-sm active:bg-indigo-700 disabled:opacity-50">
           {busy ? "분석 중" : "분석하기"}
@@ -109,7 +109,7 @@ export default function StockApp() {
       <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none]">{chips(ui.quick_tickers, "quick")}</div>
       {recent.length > 0 && (
         <div className="mt-2 flex items-center gap-2">
-          <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">최근</span>
+          <span className="shrink-0 text-xs text-slate-500 dark:text-slate-500">최근</span>
           <div className="-mr-4 flex gap-2 overflow-x-auto pb-1 pr-4 [scrollbar-width:none]">{chips(recent, "recent")}</div>
         </div>
       )}
@@ -121,10 +121,10 @@ export default function StockApp() {
             <span className="font-semibold">{steps.at(-1) ?? "요청 보내는 중…"}</span>
             <span className="ml-auto text-sm tabular-nums text-slate-500">{elapsed}초</span>
           </div>
-          <ol className="mt-3 space-y-1 text-sm text-slate-500 dark:text-slate-400">
+          <ol className="mt-3 space-y-1 text-sm text-slate-500 dark:text-slate-500">
             {steps.slice(0, -1).map((s, i) => <li key={i}>✓ {s.replace(/…$/, "")}</li>)}
           </ol>
-          <p className="mt-3 text-xs text-slate-400">실제 분석은 30~90초 걸릴 수 있어요.</p>
+          <p className="mt-3 text-xs text-slate-500">실제 분석은 30~90초 걸릴 수 있어요.</p>
         </section>
       )}
 
@@ -139,7 +139,7 @@ export default function StockApp() {
       )}
 
       {!result && !busy && !error && (
-        <p className="mt-10 text-center text-sm text-slate-400">위 칩을 누르거나 티커를 입력해 보세요.</p>
+        <p className="mt-10 text-center text-sm text-slate-500">위 칩을 누르거나 티커를 입력해 보세요.</p>
       )}
     </main>
   );

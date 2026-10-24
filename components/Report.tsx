@@ -89,8 +89,7 @@ export default function Report({ data, cached, mock, busy, onRefresh }: Props) {
               <span className="text-2xl font-extrabold tracking-tight">{data.ticker}</span>
               {data.exchange && <span className="text-xs font-semibold text-slate-500">{data.exchange}</span>}
             </div>
-            <p className="truncate text-sm text-slate-600 dark:text-slate-300">{data.company}</p>
-            <p className="text-xs text-slate-500">{[data.sector, data.country].filter(Boolean).join(" · ")}</p>
+            <p className="text-base font-semibold text-slate-700 dark:text-slate-300">{data.company}</p>
           </div>
           {q && (
             <div className="text-right">
@@ -103,12 +102,18 @@ export default function Report({ data, cached, mock, busy, onRefresh }: Props) {
             </div>
           )}
         </div>
+        {(data.sector || data.country) && (
+          <dl className="mt-3 space-y-1.5 rounded-xl bg-slate-50 p-3 text-[0.95rem] leading-relaxed">
+            {data.sector && <div className="flex gap-3"><dt className="w-10 shrink-0 font-bold text-slate-500">업종</dt><dd className="text-slate-800">{data.sector}</dd></div>}
+            {data.country && <div className="flex gap-3"><dt className="w-10 shrink-0 font-bold text-slate-500">국가</dt><dd className="text-slate-800">{data.country}</dd></div>}
+          </dl>
+        )}
         {q && (
           <>
             <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
               {dollarVol != null && (
                 <><dt className="text-slate-500">거래대금</dt>
-                <dd className="text-right font-bold tabular-nums">{dollarVol.estimated && <span className="mr-1 text-xs font-normal text-slate-400" title="가격×거래량으로 추정">≈</span>}{capKo(dollarVol.value)}</dd></>
+                <dd className="text-right font-bold tabular-nums">{dollarVol.estimated && <span className="mr-1 text-xs font-normal text-slate-500" title="가격×거래량으로 추정">≈</span>}{capKo(dollarVol.value)}</dd></>
               )}
               {q.volume != null && (
                 <><dt className="text-slate-500">거래량</dt>
@@ -124,13 +129,13 @@ export default function Report({ data, cached, mock, busy, onRefresh }: Props) {
               {q.market_cap_usd != null && <><dt className="text-slate-500">시가총액</dt><dd className="text-right font-semibold tabular-nums">{capKo(q.market_cap_usd)}</dd></>}
             </dl>
             {q.week52_low != null && q.week52_high != null && <Range52 low={q.week52_low} high={q.week52_high} price={q.price} />}
-            <p className="mt-2 text-xs text-slate-400">시세 기준: {q.as_of} · {q.source}</p>
+            <p className="mt-2 text-xs text-slate-500">시세 기준: {q.as_of} · {q.source}</p>
           </>
         )}
         <div className="mt-3 flex items-center justify-between gap-2 border-t border-slate-100 pt-3 text-xs text-slate-500 dark:border-slate-800">
           <span>
             분석 {fmtStamp(data.analyzed_at.kst, "Asia/Seoul")} KST<br />
-            <span className="text-slate-400">({fmtStamp(data.analyzed_at.et, "America/New_York")} ET){cached && " · 저장된 결과"}</span>
+            <span className="text-slate-500">({fmtStamp(data.analyzed_at.et, "America/New_York")} ET){cached && " · 저장된 결과"}</span>
           </span>
           <button type="button" onClick={onRefresh} disabled={busy}
             className="shrink-0 rounded-lg px-3 py-2 font-semibold text-indigo-600 ring-1 ring-indigo-200 active:bg-indigo-50 disabled:opacity-50 dark:text-indigo-300 dark:ring-indigo-800 dark:active:bg-indigo-950">
@@ -161,8 +166,8 @@ export default function Report({ data, cached, mock, busy, onRefresh }: Props) {
                     ? <a href={n.url} target="_blank" rel="noopener noreferrer" className="font-semibold leading-snug underline-offset-2 hover:underline">{n.headline}</a>
                     : <span className="font-semibold leading-snug">{n.headline}</span>}
                 </div>
-                <p className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{n.description}</p>
-                <p className="mt-1 text-xs text-slate-400">
+                <p className="mt-1 text-sm leading-relaxed text-slate-700 dark:text-slate-300">{n.description}</p>
+                <p className="mt-1 text-xs text-slate-500">
                   {n.source} · {n.date}{n.category && ` · ${ui.news_categories[n.category]}`}
                 </p>
               </li>
@@ -190,7 +195,7 @@ export default function Report({ data, cached, mock, busy, onRefresh }: Props) {
                   <tr key={i} className={`border-b border-slate-100 align-top last:border-0 dark:border-slate-800 ${e.status === "past" ? "text-slate-500" : ""}`}>
                     <td className="py-2.5 pr-3 tabular-nums">
                       {e.date}
-                      <div className={`mt-0.5 text-[11px] font-bold ${e.status === "past" ? "text-slate-400" : e.status === "upcoming" ? "text-indigo-600 dark:text-indigo-300" : "text-amber-600 dark:text-amber-300"}`}>
+                      <div className={`mt-0.5 text-[11px] font-bold ${e.status === "past" ? "text-slate-500" : e.status === "upcoming" ? "text-indigo-600 dark:text-indigo-300" : "text-amber-600 dark:text-amber-300"}`}>
                         {ui.event_status[e.status]}
                       </div>
                     </td>
@@ -216,7 +221,7 @@ export default function Report({ data, cached, mock, busy, onRefresh }: Props) {
           if (!items.length) return null;
           return (
             <div key={label as string} className="mb-4 last:mb-0">
-              <h3 className="mb-2 text-sm font-bold text-slate-600 dark:text-slate-300">{label as string}</h3>
+              <h3 className="mb-2 text-sm font-bold text-slate-700 dark:text-slate-300">{label as string}</h3>
               <ul className="space-y-2">
                 {items.map((r, i) => {
                   const sev = ui.severity[r.severity as SeverityKey];
@@ -226,8 +231,8 @@ export default function Report({ data, cached, mock, busy, onRefresh }: Props) {
                         <span className="font-bold">{r.title}</span>
                         <span className="ml-auto shrink-0 text-xs font-bold" style={{ color: sev.color }}>{sev.label}</span>
                       </div>
-                      <p className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{r.detail}</p>
-                      {r.category && <p className="mt-1 text-xs text-slate-400">{ui.risk_categories[r.category]}</p>}
+                      <p className="mt-1 text-sm leading-relaxed text-slate-700 dark:text-slate-300">{r.detail}</p>
+                      {r.category && <p className="mt-1 text-xs text-slate-500">{ui.risk_categories[r.category]}</p>}
                     </li>
                   );
                 })}
@@ -254,7 +259,7 @@ export default function Report({ data, cached, mock, busy, onRefresh }: Props) {
           ))}
         </div>
       </Section>
-      <p className="mt-4 px-1 text-xs leading-relaxed text-slate-400">{ui.disclaimer}</p>
+      <p className="mt-4 px-1 text-xs leading-relaxed text-slate-500">{ui.disclaimer}</p>
     </div>
   );
 }
